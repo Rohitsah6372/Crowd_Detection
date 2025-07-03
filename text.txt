@@ -1,7 +1,23 @@
-# For Linux/macOS:
-bash setup.sh
+# How to download and install this project:
 
-# For Windows:
-setup.bat
+1. Download or clone the project folder to your computer.
+   - To clone using git, run:
+     git clone <repository-url>
+   - Or download as a ZIP from GitHub and extract it.
+
+2. Open a terminal (Linux/macOS) or Command Prompt (Windows) and navigate to the project folder.
+
+3. Run the setup command for your operating system:
+   - For Linux/macOS:
+     bash setup.sh
+   - For Windows:
+     setup.bat
+
+This will automatically install all required Python dependencies and download the YOLO-CROWD model (yolo-crowd.pt version: v1.0).
+
+After setup, you can run the project as described in the README or project documentation.
+
+# Model version:
+yolo-crowd.pt version: v1.0
 
 pip install -r requirements.txt

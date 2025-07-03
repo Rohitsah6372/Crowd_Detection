@@ -463,11 +463,6 @@ function updateAllHeadCountHistories() {
     }
 }
 
-// Update all head count histories every 5 seconds
-setInterval(updateAllHeadCountHistories, 5000);
-// Initial call
-updateAllHeadCountHistories();
-
 // Add SheetJS CDN for Excel export
 if (!window.XLSX) {
     const script = document.createElement('script');
