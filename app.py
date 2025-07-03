@@ -124,7 +124,7 @@ def upload_video():
 def start_processing():
     global is_processing_active, current_uploaded_video_path
     data = request.json
-    source_type = data.get("source_type")
+    source_type = data.get("source_type")  # 'webcam', 'file', or 'stream'
     source_path = data.get("source_path")
     feed = int(data.get("feed", 0))
     if is_processing_active[feed]:
@@ -134,6 +134,9 @@ def start_processing():
         actual_source_to_processor = current_uploaded_video_path[feed]
     elif source_type == "file" and not current_uploaded_video_path[feed]:
         return jsonify(success=False, message="No video file uploaded yet. Please upload a file first.")
+    # For 'stream', just use the provided URL as source_path
+    # For 'webcam', use the webcam index
+    # For 'file', use the uploaded file path
     if not crowd_processors[feed].set_video_source(source_type, actual_source_to_processor):
         return jsonify(success=False, message=f"Failed to open video source: {actual_source_to_processor}")
     is_processing_active[feed] = True

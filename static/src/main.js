@@ -249,6 +249,36 @@ for (let i = 0; i < FEED_COUNT; i++) {
             });
         }
     });
+
+    const streamUrlInput = document.getElementById(`streamUrlInput${i}`);
+    const startStreamBtn = document.getElementById(`startStreamBtn${i}`);
+    if (startStreamBtn && streamUrlInput) {
+        startStreamBtn.addEventListener('click', () => {
+            const streamUrl = streamUrlInput.value.trim();
+            if (!streamUrl) {
+                alert('Please enter a valid stream URL.');
+                return;
+            }
+            startStreamBtn.disabled = true;
+            stopButtons[i].disabled = false;
+            fetch('/start_processing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ source_type: 'stream', source_path: streamUrl, feed: i })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        videoElements[i].src = `/video_feed/${i}?` + new Date().getTime();
+                        isFeedActive[i] = true;
+                    } else {
+                        alert('Error starting stream: ' + data.message);
+                        startStreamBtn.disabled = false;
+                        stopButtons[i].disabled = true;
+                    }
+                });
+        });
+    }
 }
 
 function getAlertClass(message) {

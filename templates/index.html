@@ -226,6 +226,8 @@
                         <!-- Video upload for this camera -->
                         <input type="file" id="videoUploadInput{{i}}" accept="video/*" style="display:none">
                         <button id="uploadVideoBtn{{i}}" class="btn btn-secondary p-1 px-2">Upload Video</button>
+                        <!-- Stream URL input and button -->
+
                         <!-- {% if i == 0 %}
                         <button id="useMyWebcamBtn"
                             class="btn btn-primary p-1 bg-gradient-to-r from-green-400 to-blue-500 border-0 ml-2">Use My
@@ -251,6 +253,11 @@
                                 id="predictedDensity{{i}}">N/A</span></span>
                         <span class="bg-indigo-50 px-2 py-1 rounded font-semibold">ROI: <span id="roiCoords{{i}}">Not
                                 set</span></span>
+                    </div>
+                    <div class="container justify-center ">
+                        <input type="text" id="streamUrlInput{{i}}" placeholder="CCTV Stream URL (RTSP/HTTP)"
+                            class="w-48 pl-2 pr-2 py-1 border border-indigo-200 rounded-md shadow-sm text-sm focus:ring-2 focus:ring-indigo-400">
+                        <button id="startStreamBtn{{i}}" class="btn btn-primary p-1">Start Stream</button>
                     </div>
                     <!-- <div id="alertBox{{i}}"
                         class="alert-message alert-normal mt-4 text-base font-bold transition-colors duration-200">
