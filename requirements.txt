@@ -1,0 +1,22 @@
+# Main requirements for the crowd detection web app
+flask
+matplotlib>=3.2.2
+numpy>=1.18.5
+opencv-python>=4.1.2
+Pillow
+PyYAML>=5.3.1
+scipy>=1.4.1
+torch>=1.7.0
+torchvision>=0.8.1
+tqdm>=4.41.0
+tensorboard>=2.4.1
+seaborn>=0.11.0
+pandas
+thop
+pycocotools
+# Optional: for experiment tracking
+# wandb
+# Optional: for model export
+# coremltools>=4.1
+# onnx>=1.8.1
+# scikit-learn==0.19.2 

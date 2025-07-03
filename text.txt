@@ -1,0 +1,7 @@
+# For Linux/macOS:
+bash setup.sh
+
+# For Windows:
+setup.bat
+
+pip install -r requirements.txt

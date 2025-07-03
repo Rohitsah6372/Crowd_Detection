@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stampede Detection System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        #videoElement {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        #canvasOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .info-panel {
+            background-color: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .alert-message {
+            font-weight: 700;
+            text-align: center;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .alert-normal {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            color: #b45309;
+        }
+
+        .alert-critical {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Button styling */
+        .btn {
+            padding: 0.5rem 1rem;
+            /* Reduced padding for smaller buttons */
+            font-size: 0.875rem;
+            /* Smaller font size */
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            /* Lift effect on hover */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+
+            .main-content {
+                flex: 3;
+            }
+
+            .sidebar {
+                flex: 1;
+                min-width: 300px;
+            }
+        }
+
+        .alert-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .alert-history-table th,
+        .alert-history-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .alert-history-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .alert-history-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .alert-history-table tbody tr:hover {
+            background-color: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-4">
+    <div class="container mx-auto px-4 flex flex-col lg:flex-row w-full gap-6">
+        <div class="main-content w-full lg:w-2/3">
+            <!-- <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg p-6 mb-8">
+                <h1 class="text-4xl font-extrabold text-white text-center tracking-tight drop-shadow-lg">Stampede
+                    Detection System</h1>
+                <p class="text-center text-indigo-100 mt-2 text-lg">Live Crowd Monitoring - Multi-Camera</p>
+            </div> -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                {% for i in range(4) %}
+                <div
+                    class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 p-4 flex flex-col items-center relative border border-indigo-100">
+                    <span
+                        class="absolute top-2 left-4 bg-indigo-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">Camera
+                        {{i+1}}</span>
+                    <div class="flex items-center gap-3 mb-3 mt-6">
+                        <label for="webcamIndex{{i}}" class="block text-xs font-semibold text-gray-700">Webcam
+                            Index:</label>
+                        <input type="number" id="webcamIndex{{i}}" value="{{i}}" min="0" max="10"
+                            class="w-14 pl-2 pr-2 py-1 border border-indigo-200 rounded-md shadow-sm text-sm focus:ring-2 focus:ring-indigo-400">
+                        <button id="startButton{{i}}" class="btn bg-teal-500 hover:bg-teal-600 text-white py-1">Start</button>
+                        <button id="stopButton{{i}}" class="btn btn-danger p-1" disabled>Stop</button>
+                        <button id="resetROIButton{{i}}" class="btn btn-secondary p-1 px-2">Reset</button>
+                        <!-- Video upload for this camera -->
+                        <input type="file" id="videoUploadInput{{i}}" accept="video/*" style="display:none">
+                        <button id="uploadVideoBtn{{i}}" class="btn btn-secondary p-1 px-2">Upload Video</button>
+                        <!-- {% if i == 0 %}
+                        <button id="useMyWebcamBtn"
+                            class="btn btn-primary p-1 bg-gradient-to-r from-green-400 to-blue-500 border-0 ml-2">Use My
+                            Webcam</button>
+                        {% endif %} -->
+                    </div>
+                    {% if i == 0 %}
+                    <div class="text-xs text-gray-500 mb-2">This is your current device webcam (Index 0).</div>
+                    {% endif %}
+                    <div
+                        class="relative w-full aspect-video rounded-lg overflow-hidden border border-indigo-100 bg-black">
+                        <img id="videoElement{{i}}" src="" alt="Video Stream {{i}}"
+                            class="w-full h-auto rounded-lg transition-transform duration-200 hover:scale-105">
+                        <canvas id="canvasOverlay{{i}}"
+                            class="absolute top-0 left-0 w-full h-full pointer-events-auto"></canvas>
+                    </div>
+                    <div class="flex flex-wrap gap-3 mt-4 text-xs text-gray-700 justify-center">
+                        <span class="bg-indigo-50 px-2 py-1 rounded font-semibold">People: <span
+                                id="peopleCount{{i}}">0</span></span>
+                        <span class="bg-indigo-50 px-2 py-1 rounded font-semibold">Density: <span
+                                id="currentDensity{{i}}">0.0000</span></span>
+                        <span class="bg-indigo-50 px-2 py-1 rounded font-semibold">Status: <span
+                                id="predictedDensity{{i}}">N/A</span></span>
+                        <span class="bg-indigo-50 px-2 py-1 rounded font-semibold">ROI: <span id="roiCoords{{i}}">Not
+                                set</span></span>
+                    </div>
+                    <!-- <div id="alertBox{{i}}"
+                        class="alert-message alert-normal mt-4 text-base font-bold transition-colors duration-200">
+                        Normal</div> -->
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="sidebar w-full lg:w-1/3">
+            <!-- <div class="info-panel mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3 text-center">ROI Statistics</h2>
+                <div class="info-item">
+                    <span class="info-label">People Count:</span>
+                    <span id="peopleCount" class="info-value">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Current Density:</span>
+                    <span id="currentDensity" class="info-value">0.0000</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status:</span>
+                    <span id="predictedDensity" class="info-value">N/A</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ROI (X,Y,W,H):</span>
+                    <span id="roiCoords" class="info-value">Not set</span>
+                </div>
+            </div> -->
+
+            <div id="alertBox" class="alert-message alert-normal">
+                Normal
+            </div>
+
+            <div class="info-panel mt-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3 text-center">View History</h2>
+                <button id="downloadExcelBtn" class="btn btn-primary w-full mb-3">Download Excel for All
+                    Cameras</button>
+                <div id="multiHistoryContainer" class="max-h-60 overflow-y-auto flex flex-col gap-4"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/static/src/main.js"></script>
+</body>
+
+</html>
