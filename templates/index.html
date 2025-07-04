@@ -259,6 +259,11 @@
                             class="w-48 pl-2 pr-2 py-1 border border-indigo-200 rounded-md shadow-sm text-sm focus:ring-2 focus:ring-indigo-400">
                         <button id="startStreamBtn{{i}}" class="btn btn-primary p-1">Start Stream</button>
                     </div>
+                    <div class="container justify-center ">
+                        <input type="file" id="imageUploadInput{{i}}" accept="image/*" style="display:none">
+                        <button id="uploadImageBtn{{i}}" class="btn btn-secondary p-1 px-2">Upload Image</button>
+                        <img id="processedImage{{i}}" src="" alt="Processed Image {{i}}" style="display:none; max-width:100%; margin-top:10px; border:1px solid #ccc; border-radius:8px;" />
+                    </div>
                     <!-- <div id="alertBox{{i}}"
                         class="alert-message alert-normal mt-4 text-base font-bold transition-colors duration-200">
                         Normal</div> -->

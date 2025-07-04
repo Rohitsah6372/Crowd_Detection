@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, Response, request, jsonify
+from flask import Flask, render_template, Response, request, jsonify, send_from_directory
 import cv2
 import time
 import os
@@ -207,6 +207,46 @@ def get_all_head_count_histories():
             entry["webcam_index"] = feed
         all_histories.append({"feed": feed, "history": history})
     return jsonify(success=True, all_histories=all_histories)
+
+
+@app.route("/upload_image", methods=["POST"])
+def upload_image():
+    feed = int(request.args.get("feed", 0))
+    if "imageFile" not in request.files:
+        return jsonify(success=False, message="No file part in the request.")
+    file = request.files["imageFile"]
+    if file.filename == "":
+        return jsonify(success=False, message="No selected file.")
+    # Save uploaded image
+    filename = secure_filename(file.filename)
+    base, ext = os.path.splitext(filename)
+    timestamp = int(time.time())
+    unique_filename = f"{base}_{timestamp}{ext}"
+    upload_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
+    file.save(upload_path)
+    # Process image
+    processor = crowd_processors[feed]
+    image = cv2.imread(upload_path)
+    if image is None:
+        return jsonify(success=False, message="Failed to read uploaded image.")
+    # If ROI is set, use it; else, use full image
+    if processor.roi_coords:
+        x, y, w, h = processor.roi_coords
+        roi = image[y:y+h, x:x+w]
+        processed = processor.process_frame(image)
+    else:
+        processed = processor.process_frame(image)
+    # Save processed image
+    processed_filename = f"processed_{unique_filename}"
+    processed_path = os.path.join(app.config["UPLOAD_FOLDER"], processed_filename)
+    cv2.imwrite(processed_path, processed)
+    # Return URL to processed image
+    return jsonify(success=True, processed_image_url=f"/uploads/{processed_filename}")
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 if __name__ == "__main__":

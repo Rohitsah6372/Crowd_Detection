@@ -279,6 +279,37 @@ for (let i = 0; i < FEED_COUNT; i++) {
                 });
         });
     }
+
+    const imageUploadInput = document.getElementById(`imageUploadInput${i}`);
+    const uploadImageBtn = document.getElementById(`uploadImageBtn${i}`);
+    const processedImage = document.getElementById(`processedImage${i}`);
+    if (uploadImageBtn && imageUploadInput) {
+        uploadImageBtn.addEventListener('click', () => {
+            imageUploadInput.click();
+        });
+        imageUploadInput.addEventListener('change', () => {
+            const file = imageUploadInput.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('imageFile', file);
+            fetch(`/upload_image?feed=${i}`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.processed_image_url) {
+                        processedImage.src = data.processed_image_url + '?' + new Date().getTime();
+                        processedImage.style.display = 'block';
+                    } else {
+                        alert('Image processing failed: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(() => {
+                    alert('Error uploading image.');
+                });
+        });
+    }
 }
 
 function getAlertClass(message) {
